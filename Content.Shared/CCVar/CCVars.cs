@@ -373,6 +373,27 @@ namespace Content.Shared.CCVar
             CVarDef.Create("zombie.players_per_infected", 10);
 
         /*
+         * Cult
+         */
+
+        public static readonly CVarDef<int> CultMinPlayers =
+            CVarDef.Create("cult.min_players", 5);
+
+        public static readonly CVarDef<int> CultMaxCultists =
+            CVarDef.Create("cult.max_cultists", 12); // Assuming average server maxes somewhere from like 50-80 people
+
+        public static readonly CVarDef<int> CultPlayersPerCultists =
+            CVarDef.Create("cult.players_per_cultists", 10);
+
+        /*
+        public static readonly CVarDef<int> TraitorCodewordCount =
+            CVarDef.Create("traitor.codeword_count", 4);
+        */
+
+        public static readonly CVarDef<int> CultMaxPicks =
+            CVarDef.Create("cult.max_picks", 20);
+
+        /*
          * Pirates
          */
 

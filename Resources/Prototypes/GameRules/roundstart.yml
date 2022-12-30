@@ -66,6 +66,12 @@
     !type:GenericGameRuleConfiguration
     id: Zombie
 
+- type: gameRule
+  id: Cult
+  config:
+    !type:GenericGameRuleConfiguration
+    id: Cult
+
 # event schedulers
 - type: gameRule
   id: BasicStationEventScheduler

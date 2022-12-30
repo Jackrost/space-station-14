@@ -1,0 +1,6 @@
+- type: instantAction
+  id: CultCommune
+  icon: Interface/Actions/shop.png
+  name: action-name-cult-commune
+  description: action-description-cult-commune
+  event: !type:CultCommuneActionEvent

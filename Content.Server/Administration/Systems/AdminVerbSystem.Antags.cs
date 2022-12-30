@@ -14,6 +14,7 @@ public sealed partial class AdminVerbSystem
     [Dependency] private readonly ZombifyOnDeathSystem _zombify = default!;
     [Dependency] private readonly TraitorRuleSystem _traitorRule = default!;
     [Dependency] private readonly NukeopsRuleSystem _nukeopsRule = default!;
+    [Dependency] private readonly CultRuleSystem _cultRule = default!;
     [Dependency] private readonly PiratesRuleSystem _piratesRule = default!;
 
     // All antag verbs have names so invokeverb works.
@@ -83,6 +84,23 @@ public sealed partial class AdminVerbSystem
             Message = Loc.GetString("admin-verb-make-nuclear-operative"),
         };
         args.Verbs.Add(nukeOp);
+
+        Verb cult = new()
+        {
+            Text = "Make cultist",
+            Category = VerbCategory.Antag,
+            IconTexture = "/Textures/Objects/Weapons/Melee/katana.rsi/icon.png",
+            Act = () =>
+            {
+                if (targetMindComp.Mind == null || targetMindComp.Mind.Session == null)
+                    return;
+
+                _cultRule.MakeCultist(targetMindComp.Mind.Session);
+            },
+            Impact = LogImpact.High,
+            Message = Loc.GetString("admin-verb-make-cult"),
+        };
+        args.Verbs.Add(cult);
 
         Verb pirate = new()
         {
