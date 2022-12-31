@@ -4,16 +4,23 @@ using Robust.Shared.GameObjects;
 
 namespace Content.Shared.Cult;
 
-public sealed class CultCommuneEvent : EntityEventArgs
+[Serializable, NetSerializable]
+public sealed class CultCommuneSendMsgEvent : BoundUserInterfaceMessage
 {
     public EntityUid User;
     public string Message;
 
-    public CultCommuneEvent(EntityUid userUid, string message)
+    public CultCommuneSendMsgEvent(EntityUid userUid, string message)
     {
         User = userUid;
         Message = message;
     }
+}
+
+[Serializable, NetSerializable]
+public enum CultCommuneUiKey : byte
+{
+    Key
 }
 
 public sealed class CultCommuneActionEvent : InstantActionEvent { };

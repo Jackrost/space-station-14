@@ -18,6 +18,7 @@ using Robust.Shared.Prototypes;
 using Robust.Shared.Random;
 using Robust.Shared.Utility;
 using Microsoft.CodeAnalysis;
+using Content.Shared.Actions.ActionTypes;
 
 namespace Content.Server.GameTicking.Rules;
 
@@ -110,7 +111,7 @@ public sealed class CultRuleSystem : GameRuleSystem
             return;
 
         var numCultists = MathHelper.Clamp(ev.Players.Length / _playersPerCultist, 1, _maxCultists);
-        var codewordCount = _cfg.GetCVar(CCVars.TraitorCodewordCount);
+        //var codewordCount = _cfg.GetCVar(CCVars.TraitorCodewordCount);
 
         var cultistPool = FindPotentialCultist(ev);
         var selectedCultists = PickCultists(numCultists, cultistPool);
@@ -190,10 +191,11 @@ public sealed class CultRuleSystem : GameRuleSystem
         // Give ritual knife and metal to satchel or pocket                            -----------------------------------------------------------------------------------
 
         // Give Commune ability
+        
         if (mind.OwnedEntity != null)
         {
-            var EntityUid = mind.OwnedEntity;
-            _action.AddAction(EntityUid, "CultCommune", null);
+            var commAction = new InstantAction(_prototypeManager.Index<InstantActionPrototype>("CultCommune"));
+            _action.AddAction(mind.OwnedEntity.Value, commAction, null);
         }
         
 
