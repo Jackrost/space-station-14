@@ -70,13 +70,18 @@ namespace Content.Shared.Chat
         AdminChat = 1 << 11,
 
         /// <summary>
+        ///     Used by cultists
+        /// </summary>
+        Cult = 1 << 12,
+
+        /// <summary>
         ///     Unspecified.
         /// </summary>
-        Unspecified = 1 << 12,
+        Unspecified = 1 << 13,
 
         /// <summary>
         ///     Channels considered to be IC.
         /// </summary>
-        IC = Local | Whisper | Radio | Dead | Emotes | Damage | Visual,
+        IC = Local | Whisper | Radio | Dead | Emotes | Damage | Visual | Cult,
     }
 }

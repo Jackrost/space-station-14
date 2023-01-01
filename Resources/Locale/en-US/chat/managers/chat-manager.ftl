@@ -24,9 +24,11 @@ chat-manager-send-ooc-wrap-message = OOC: {$playerName}: {$message}
 chat-manager-send-ooc-patron-wrap-message = OOC: [color={$patronColor}]{$playerName}[/color]: {$message}
 chat-manager-send-dead-chat-wrap-message = {$deadChannelName}: {$playerName}: {$message}
 chat-manager-send-admin-dead-chat-wrap-message = {$adminChannelName}:({$userName}): {$message}
+chat-manager-send-cult-chat-wrap-message = {$cultChannelName}: {$playerName}: {$message}
 chat-manager-send-admin-chat-wrap-message = {$adminChannelName}: {$playerName}: {$message}
 chat-manager-send-admin-announcement-wrap-message = {$adminChannelName}: {$message}
 chat-manager-send-hook-ooc-wrap-message = OOC: (D){$senderName}: {$message}
 
 chat-manager-dead-channel-name = DEAD
+chat-manager-cult-channel-name = CULT
 chat-manager-admin-channel-name = ADMIN

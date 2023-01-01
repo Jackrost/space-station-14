@@ -397,6 +397,7 @@ public sealed class ChatUIController : UIController
             FilterableChannels |= ChatChannel.Whisper;
             FilterableChannels |= ChatChannel.Radio;
             FilterableChannels |= ChatChannel.Emotes;
+            FilterableChannels |= ChatChannel.Cult;
 
             // Can only send local / radio / emote when attached to a non-ghost entity.
             // TODO: this logic is iffy (checking if controlling something that's NOT a ghost), is there a better way to check this?
@@ -406,6 +407,7 @@ public sealed class ChatUIController : UIController
                 CanSendChannels |= ChatSelectChannel.Whisper;
                 CanSendChannels |= ChatSelectChannel.Radio;
                 CanSendChannels |= ChatSelectChannel.Emotes;
+                CanSendChannels |= ChatSelectChannel.Cult;
             }
         }
 

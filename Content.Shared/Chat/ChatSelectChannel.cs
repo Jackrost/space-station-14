@@ -1,4 +1,4 @@
-﻿namespace Content.Shared.Chat
+namespace Content.Shared.Chat
 {
     /// <summary>
     ///     Chat channels that the player can select in the chat box.
@@ -25,6 +25,11 @@
         ///     Radio messages
         /// </summary>
         Radio = ChatChannel.Radio,
+
+        /// <summary>
+        ///     Chat heard by cultists
+        /// </summary>
+        Cult = ChatChannel.Cult,
 
         /// <summary>
         ///     Local out-of-character channel
