@@ -46,10 +46,14 @@ public sealed class CultRuleSystem : GameRuleSystem
     private int _playersPerCultist => _cfg.GetCVar(CCVars.CultPlayersPerCultists);
     private int _maxCultists => _cfg.GetCVar(CCVars.CultMaxCultists);
 
+    /*
+     * Cult Tome
+     * 
     Dictionary<string,int> CultWordsKey = new Dictionary<string, int>() { { "1", 1 } , {"2", 1} };
     List<string> CultWordsValue = new List<string>() { "a", "b", "c" };
 
     public Dictionary<string, string> CultWordsDictionary = new Dictionary<string, string>();
+    */
 
     public override void Initialize()
     {

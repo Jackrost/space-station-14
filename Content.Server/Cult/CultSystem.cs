@@ -31,7 +31,7 @@ namespace Content.Server.Cult
         [Dependency] private readonly IChatManager _chatManager = default!;
         [Dependency] private readonly UserInterfaceSystem _userint = default!;
         [Dependency] private readonly IAdminLogManager _adminLogger = default!;
-        [Dependency] private readonly CultRuleSystem _cult = default!;
+        [Dependency] private readonly CultRuleSystem _cultrule = default!;
 
         public override void Initialize()
         {
@@ -106,7 +106,7 @@ namespace Content.Server.Cult
             */
         }
 
-        private bool CheckCultistRole(EntityUid uid)
+        public bool CheckCultistRole(EntityUid uid)
         {
             if (TryComp<MindComponent>(uid, out var mind))
             {

@@ -1,0 +1,14 @@
+﻿- type: entity
+  parent: BaseRune
+  id: OfferingRune
+  name: "Offering Rune"
+  components:
+    - type: Sprite
+      sprite: Structures/Magic/Cult/rune.rsi
+      netsync: false
+      layers:
+        - state: cult2
+          color: '#FF00FF'
+    - type: CultOfferingRune
+      invokePhrase: "LOOOOOOL"
+
