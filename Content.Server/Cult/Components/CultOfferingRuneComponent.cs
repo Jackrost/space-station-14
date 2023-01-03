@@ -1,6 +1,10 @@
 using System.Linq;
 using Content.Server.Mind.Components;
 using Content.Server.Roles;
+using Content.Server.Body.Systems;
+using Content.Server.Popups;
+using Content.Server.GameTicking.Rules;
+using Content.Server.Mind;
 using Content.Shared.Access.Components;
 using Content.Shared.Humanoid;
 using Content.Shared.MobState;
@@ -16,6 +20,9 @@ namespace Content.Server.Cult.Components
         [Dependency] private readonly EntityManager _entityManager = default!;
         [Dependency] private readonly EntityLookupSystem _lookup = default!;
         [Dependency] private readonly CultSystem _cult = default!;
+        [Dependency] private readonly BodySystem _bodySystem = default!;
+        [Dependency] private readonly CultRuleSystem _cultrule = default!;
+        [Dependency] private readonly PopupSystem _popup = default!;
 
         [ViewVariables(VVAccess.ReadWrite), DataField("sacrificeDeadMinCount")]
         public uint SacrificeDeadMinCount = 1;
@@ -26,17 +33,8 @@ namespace Content.Server.Cult.Components
         [ViewVariables(VVAccess.ReadWrite), DataField("sacrificeMinCount")]
         public uint SacrificeMinCount = 3;
 
-        /*
-        public override bool InvokeRune(EntityUid uid, uint count)
-        {
-            /*
-            if (!TryInvokeRune(uid, count))
-                return false;
-            return true;
-        }
-        */
 
-        public override bool GroupInvokeRune(EntityUid rune, EntityUid user, HashSet<EntityUid> cultists)
+        public override bool InvokeRune(EntityUid rune, EntityUid user, HashSet<EntityUid> cultists)
         {
             var targets = _lookup.GetEntitiesInRange(rune, 10f, LookupFlags.Dynamic);
             targets.RemoveWhere(x => !_entityManager.HasComponent<HumanoidComponent>(x) || _cult.CheckCultistRole(x));
@@ -45,8 +43,6 @@ namespace Content.Server.Cult.Components
                 return false;
             if (!_entityManager.TryGetComponent<TransformComponent>(rune, out var rune_transform))
                 return false;
-
-            //Vector2 rune_pos = new Vector2(rune_transform.WorldPosition.X, rune_transform.WorldPosition.Y);
 
             float range = 999f;
             EntityUid? victim = null;
@@ -67,53 +63,85 @@ namespace Content.Server.Cult.Components
             if (victim == null)
                 return false;
 
-            return ProcessRune(victim.Value, cultists.Count);
-        }
-
-        public bool ProcessRune(EntityUid target, int cultCount)
-        {
             var canBeConverted = false;
-            _entityManager.TryGetComponent<MobStateComponent>(target, out var mobstate);
-            if (_entityManager.TryGetComponent<MindComponent>(target, out var mind))
+            _entityManager.TryGetComponent<MobStateComponent>(victim.Value, out var mobstate);
+            if (_entityManager.TryGetComponent<MindComponent>(victim.Value, out var mind))
             {
                 if (mind != null)
                     canBeConverted = mind!.Mind!.AllRoles.Any(role => role is Job { CanBeAntag: true });
             }
 
-            /* Check if target is objective
-             * 
-             * Is it objective or it's alive?
-             * if (cultCount < SacrificeMinCount)
-             * {
-             * SendMessage(fail);
-             * return false;
-             * } else
-             * {
-             *      Sacrifice(target);
-             *      return true;
-             * }
-             * 
+            /* 
+             *  TO-DO Check if target is objective ---------------------------------------------------------------
              */
 
-
-            if (mobstate!.CurrentState == DamageState.Dead)
+            if (mobstate!.CurrentState != DamageState.Dead)
             {
-                // If mob dead - sacrifice
+                if (canBeConverted)
+                    return Sacrifice(victim.Value, user, cultists, false);
+                else
+                    return Convert(victim.Value, user, cultists);
             }
-            // If mob alive and mind-shilded or is objective - sacrifice
+            return SacrificeNonOvjectiveDead(victim.Value, user, cultists);
+        }
 
-            // Else - convert
+        public bool Sacrifice(EntityUid target, EntityUid user, HashSet<EntityUid> cultists, bool objective)
+        {
+            if (cultists.Count < SacrificeMinCount)
+            {
+                _popup.PopupEntity(Loc.GetString("cult-rune-offering-not-enought-to-sacrifice"), user, user);
+                return false;
+            }
+
+            // Check if target is objective
+            if (objective)
+            {
+                // SendMessage(sacrificed);
+                _bodySystem.GibBody(target);
+                // Logs - sacrificed-objective
+                return true;
+            }
+
+
+            // SendMessage(sacrificed);
+            _bodySystem.GibBody(target);
+            // Logs - sacrificed
             return true;
         }
 
-        public void Sacrifice(EntityUid target, EntityUid user, HashSet<EntityUid> cultists)
+        public bool SacrificeNonOvjectiveDead(EntityUid target, EntityUid user, HashSet<EntityUid> cultists)
         {
-            // Check if target is objective
-
-            // Gib target
+            if (cultists.Count < SacrificeDeadMinCount)
+            {
+                _popup.PopupEntity(Loc.GetString("cult-rune-offering-not-enought-to-sacrifice"), user, user);
+                return false;
+            }
 
             // SendMessage(sacrificed);
+            _bodySystem.GibBody(target);
+            // Logs - sacrificed
+            return true;
         }
 
+        public bool Convert(EntityUid target, EntityUid user, HashSet<EntityUid> cultists)
+        {
+            if (cultists.Count < ConvertMinCount)
+            {
+                _popup.PopupEntity(Loc.GetString("cult-rune-offering-not-enought-to-convert"), user, user);
+                return false;
+            }
+
+            if (_entityManager.TryGetComponent<MindComponent>(target, out var mind))
+            {
+                if (mind != null)
+                {
+                    // Error - no mind
+                    return false;
+                } 
+            }
+            _cultrule.MakeCultist(mind!.Mind!.Session!);
+            // Logs - converted
+            return true;
+        }
     }
 }

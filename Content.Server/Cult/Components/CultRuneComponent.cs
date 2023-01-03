@@ -18,12 +18,7 @@ namespace Content.Server.Cult.Components
             return true;
         }
 
-        public virtual bool InvokeRune(EntityUid rune, EntityUid user)
-        {
-            return true;
-        }
-
-        public virtual bool GroupInvokeRune(EntityUid rune, EntityUid user, HashSet<EntityUid> cultists)
+        public virtual bool InvokeRune(EntityUid rune, EntityUid user, HashSet<EntityUid> cultists)
         {
             return true;
         }
