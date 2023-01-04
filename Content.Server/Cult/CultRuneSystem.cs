@@ -31,12 +31,12 @@ namespace Content.Server.Cult
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<CultRuneComponent, ActivateInWorldEvent>(OnActivate);
+            SubscribeLocalEvent<CultRuneBaseComponent, ActivateInWorldEvent>(OnActivate);
             //SubscribeLocalEvent<CultRuneComponent, CultRuneInvokeSuccessEvent>(OnAfterInvoke);
-            SubscribeLocalEvent<CultOfferingRuneComponent, CultRuneInvokeEvent>(OnInvokeOffering);
+            SubscribeLocalEvent<CultRuneOfferingComponent, CultRuneInvokeEvent>(OnInvokeOffering);
         }
 
-        private void OnActivate(EntityUid uid, CultRuneComponent component, ActivateInWorldEvent args)
+        private void OnActivate(EntityUid uid, CultRuneBaseComponent component, ActivateInWorldEvent args)
         {
             if (args.Handled)
                 return;
@@ -57,25 +57,18 @@ namespace Content.Server.Cult
                 return;
             }
 
-            RaiseLocalEvent(new CultRuneInvokeEvent(uid, args.User,cultists));   
-        }
-
-        /*
-        private void OnAfterInvoke(EntityUid uid, CultRuneComponent component, CultRuneInvokeSuccessEvent args)
-        {
-            foreach (var cultist in args.Cultists)
+            var ev = new CultRuneInvokeEvent(uid, args.User, cultists);
+            RaiseLocalEvent(uid, ev,false);
+            if (ev.Result)
             {
-                _chat.TrySendInGameICMessage(cultist, component.InvokePhrase, InGameICChatType.Speak, false, false, null, null, null, false);
+                // Raise Shared message to other clients - CultRuneInvokeSuccessEvent(uid, args.User, cultists)
+                OnAfterInvoke(uid, args.User, cultists);
             }
-
-            // TO-DO - add logs - "rune was invoke by X"
-
         }
-        */
 
         private void OnAfterInvoke(EntityUid rune, EntityUid user, HashSet<EntityUid> cultists)
         {
-            if (!_entityManager.TryGetComponent<CultRuneComponent>(rune, out var component))
+            if (!_entityManager.TryGetComponent<CultRuneBaseComponent>(rune, out var component))
                 return;
             foreach (var cultist in cultists)
             {
@@ -95,9 +88,9 @@ namespace Content.Server.Cult
         }
 
 
-        public void OnInvokeOffering(EntityUid uid, CultOfferingRuneComponent component, CultRuneInvokeEvent args)
+        public void OnInvokeOffering(EntityUid uid, CultRuneOfferingComponent component, CultRuneInvokeEvent args)
         {
-            var targets = _lookup.GetEntitiesInRange(uid, 10f, LookupFlags.Dynamic);
+            var targets = _lookup.GetEntitiesInRange(uid, 1f, LookupFlags.Dynamic | LookupFlags.Sundries);
             targets.RemoveWhere(x => !_entityManager.HasComponent<HumanoidComponent>(x) || _cult.CheckCultistRole(x));
 
             if (targets.Count == 0)
@@ -107,30 +100,29 @@ namespace Content.Server.Cult
 
             float range = 999f;
             EntityUid? victim = null;
-            foreach (var target in targets)
+            if (targets.Count > 1)
             {
-                if (!_entityManager.TryGetComponent<TransformComponent>(target, out var target_transform))
-                    return;
-
-                rune_transform.Coordinates.TryDistance(_entityManager, target_transform.Coordinates, out var new_range);
-
-                if (range < new_range)
+                foreach (var target in targets)
                 {
-                    range = new_range;
-                    victim = target;
+                    if (!_entityManager.TryGetComponent<TransformComponent>(target, out var target_transform))
+                        return;
+
+                    rune_transform.Coordinates.TryDistance(_entityManager, target_transform.Coordinates, out var new_range);
+
+                    if (new_range < range)
+                    {
+                        range = new_range;
+                        victim = target;
+                    }
                 }
             }
+            else
+                victim = targets.First();
 
             if (victim == null)
                 return;
 
-            var canBeConverted = false;
             _entityManager.TryGetComponent<MobStateComponent>(victim.Value, out var mobstate);
-            if (_entityManager.TryGetComponent<MindComponent>(victim.Value, out var mind))
-            {
-                if (mind != null)
-                    canBeConverted = mind!.Mind!.AllRoles.Any(role => role is Job { CanBeAntag: true });
-            }
 
             /* 
              *  TO-DO Check if target is objective ---------------------------------------------------------------
@@ -139,20 +131,27 @@ namespace Content.Server.Cult
             bool result = false;
             if (mobstate!.CurrentState != DamageState.Dead)
             {
+                var canBeConverted = false;
+                if (_entityManager.TryGetComponent<MindComponent>(victim.Value, out var mind))
+                {
+                    if (mind.HasMind)
+                        canBeConverted = mind!.Mind!.AllRoles.Any(role => role is Job { CanBeAntag: true });
+                }
+
                 if (canBeConverted)
-                    result = Sacrifice(uid,victim.Value, args.User, args.Cultists, false);
+                    result = Convert(uid, victim.Value, args.User, args.Cultists);
                 else
-                    result = Convert(uid,victim.Value, args.User, args.Cultists);
+                    result = Sacrifice(uid, victim.Value, args.User, args.Cultists, false);
+
             } else
                 result = SacrificeNonOvjectiveDead(uid,victim.Value, args.User, args.Cultists);
 
-            if (result)
-                OnAfterInvoke(uid, args.User, args.Cultists);
+            args.Result = result;
         }
 
         public bool Sacrifice(EntityUid rune,EntityUid target, EntityUid user, HashSet<EntityUid> cultists, bool objective)
         {
-            if (!_entityManager.TryGetComponent<CultOfferingRuneComponent>(rune, out var offering))
+            if (!_entityManager.TryGetComponent<CultRuneOfferingComponent>(rune, out var offering))
                 return false;
             if (cultists.Count < offering.SacrificeMinCount)
             {
@@ -178,7 +177,7 @@ namespace Content.Server.Cult
 
         public bool SacrificeNonOvjectiveDead(EntityUid rune, EntityUid target, EntityUid user, HashSet<EntityUid> cultists)
         {
-            if (!_entityManager.TryGetComponent<CultOfferingRuneComponent>(rune, out var offering))
+            if (!_entityManager.TryGetComponent<CultRuneOfferingComponent>(rune, out var offering))
                 return false;
             if (cultists.Count < offering.SacrificeDeadMinCount)
             {
@@ -194,7 +193,7 @@ namespace Content.Server.Cult
 
         public bool Convert(EntityUid rune, EntityUid target, EntityUid user, HashSet<EntityUid> cultists)
         {
-            if (!_entityManager.TryGetComponent<CultOfferingRuneComponent>(rune, out var offering))
+            if (!_entityManager.TryGetComponent<CultRuneOfferingComponent>(rune, out var offering))
                 return false;
             if (cultists.Count < offering.ConvertMinCount)
             {
@@ -204,24 +203,32 @@ namespace Content.Server.Cult
 
             if (_entityManager.TryGetComponent<MindComponent>(target, out var mind))
             {
-                if (mind != null)
+                if (!mind.HasMind)
                 {
                     // Error - no mind
                     return false;
                 }
             }
-            _cultrule.MakeCultist(mind!.Mind!.Session!);
-            // Logs - converted
+
+            _cultrule.MakeCultist(mind!.Mind!.Session!, false);
+            /*
+             * TO-DO
+             * 
+             * 1) Heal - DamageableSystem
+             * 2) Give him dagger
+             * 3) Logs - converted
+             * 
+             */
             return true;
         }
     }
 
-
     public sealed class CultRuneInvokeEvent : EntityEventArgs
     {
-        public EntityUid Rune { get; }
-        public EntityUid User { get; }
-        public HashSet<EntityUid> Cultists { get; } = new HashSet<EntityUid>();
+        public EntityUid Rune { get; set; }
+        public EntityUid User { get; set; }
+        public HashSet<EntityUid> Cultists { get; set; } = new HashSet<EntityUid>();
+        public bool Result { get; set; }
 
         public CultRuneInvokeEvent(EntityUid rune, EntityUid user, HashSet<EntityUid> cultists)
         {
@@ -230,4 +237,5 @@ namespace Content.Server.Cult
             Cultists = cultists;
         }
     }
+
 }

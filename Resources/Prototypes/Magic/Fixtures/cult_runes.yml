@@ -9,6 +9,7 @@
       layers:
         - state: cult2
           color: '#FF00FF'
-    - type: CultOfferingRune
+    - type: CultRuneBase
       invokePhrase: "LOOOOOOL"
+    - type: CultRuneOffering
 

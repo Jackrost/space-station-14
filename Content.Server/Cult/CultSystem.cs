@@ -110,6 +110,9 @@ namespace Content.Server.Cult
         {
             if (TryComp<MindComponent>(uid, out var mind))
             {
+                if (!mind.HasMind)
+                    return false;
+
                 return mind.Mind!.HasRole<CultRole>();
             }
             return false;

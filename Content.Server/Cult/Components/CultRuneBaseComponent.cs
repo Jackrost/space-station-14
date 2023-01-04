@@ -3,7 +3,7 @@ using Robust.Shared.GameObjects;
 namespace Content.Server.Cult.Components
 {
     [RegisterComponent]
-    public abstract class CultRuneComponent : Component
+    public class CultRuneBaseComponent : Component
     {
         [ViewVariables(VVAccess.ReadWrite), DataField("invokersMinCount")]
         public uint InvokersMinCount = 1;

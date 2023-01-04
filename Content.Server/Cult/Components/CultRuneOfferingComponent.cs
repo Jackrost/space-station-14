@@ -3,8 +3,7 @@ using Robust.Shared.GameObjects;
 namespace Content.Server.Cult.Components
 {
     [RegisterComponent]
-    [ComponentReference(typeof(CultRuneComponent))]
-    public sealed class CultOfferingRuneComponent : CultRuneComponent
+    public sealed class CultRuneOfferingComponent : Component
     {
         [ViewVariables(VVAccess.ReadWrite), DataField("sacrificeDeadMinCount")]
         public uint SacrificeDeadMinCount = 1;

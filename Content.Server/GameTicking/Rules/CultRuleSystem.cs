@@ -121,7 +121,7 @@ public sealed class CultRuleSystem : GameRuleSystem
         var selectedCultists = PickCultists(numCultists, cultistPool);
 
         foreach (var cultist in selectedCultists)
-            MakeCultist(cultist);
+            MakeCultist(cultist,true);
     }
 
     public List<IPlayerSession> FindPotentialCultist(RulePlayerJobsAssignedEvent ev)
@@ -169,7 +169,7 @@ public sealed class CultRuleSystem : GameRuleSystem
         return results;
     }
 
-    public bool MakeCultist(IPlayerSession cultist)
+    public bool MakeCultist(IPlayerSession cultist, bool start_equip)
     {
         var mind = cultist.Data.ContentData()?.Mind;
         if (mind == null)
@@ -193,6 +193,10 @@ public sealed class CultRuleSystem : GameRuleSystem
         */
 
         // Give ritual knife and metal to satchel or pocket                            -----------------------------------------------------------------------------------
+        if (start_equip)
+        {
+
+        }
 
         // Give Commune ability
         
@@ -257,7 +261,9 @@ public sealed class CultRuleSystem : GameRuleSystem
         return true;
     }
 
-        private void HandleLatejoin(PlayerSpawnCompleteEvent ev)
+    // TO-DO ------------- Remove this is needed -------------------------------------------------
+
+    private void HandleLatejoin(PlayerSpawnCompleteEvent ev)
     {
         if (!RuleAdded)
             return;
@@ -296,7 +302,7 @@ public sealed class CultRuleSystem : GameRuleSystem
         // You get one shot.
         if (_random.Prob((float) chance))
         {
-            MakeCultist(ev.Player);
+            MakeCultist(ev.Player,true);
         }
     }
 

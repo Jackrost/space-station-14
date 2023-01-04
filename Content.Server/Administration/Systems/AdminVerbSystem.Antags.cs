@@ -95,7 +95,7 @@ public sealed partial class AdminVerbSystem
                 if (targetMindComp.Mind == null || targetMindComp.Mind.Session == null)
                     return;
 
-                _cultRule.MakeCultist(targetMindComp.Mind.Session);
+                _cultRule.MakeCultist(targetMindComp.Mind.Session,true);
             },
             Impact = LogImpact.High,
             Message = Loc.GetString("admin-verb-make-cult"),
