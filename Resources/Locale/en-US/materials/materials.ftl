@@ -17,4 +17,5 @@ materials-durathread = durathread
 materials-plasma = plasma
 materials-plastic = plastic
 materials-wood = wood
+materials-runed-metal = runed metal
 materials-uranium = uranium

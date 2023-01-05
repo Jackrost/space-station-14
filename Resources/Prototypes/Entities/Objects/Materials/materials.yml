@@ -121,6 +121,30 @@
 
 - type: entity
   parent: MaterialBase
+  id: MaterialRunedMetal
+  name: runed metal
+  suffix: Full
+  components:
+  - type: Material
+    materials:
+      Runed metal: 100
+  - type: Stack
+    stackType: RunedMetal
+  - type: Sprite
+    state: runed_metal
+  - type: Item
+    heldPrefix: runed_metal    
+
+- type: entity
+  parent: MaterialRunedMetal
+  id: MaterialRunedMetal1
+  suffix: Single
+  components:
+  - type: Stack
+    count: 1
+
+- type: entity
+  parent: MaterialBase
   id: MaterialBiomass
   name: biomass
   suffix: Full

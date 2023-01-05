@@ -109,6 +109,10 @@
     {
       "name": "wood-inhand-right",
       "directions": 4
+	},
+    {
+      "name": "runed_metal",
+	  "delays": [[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]]
     }
   ]
 }

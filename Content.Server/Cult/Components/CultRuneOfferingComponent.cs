@@ -13,5 +13,8 @@ namespace Content.Server.Cult.Components
 
         [ViewVariables(VVAccess.ReadWrite), DataField("sacrificeMinCount")]
         public uint SacrificeMinCount = 3;
+
+        [ViewVariables(VVAccess.ReadWrite), DataField("rangeTarget")]
+        public float RangeTarget = 0.3f;
     }
 }

@@ -204,6 +204,10 @@ public sealed class CultRuleSystem : GameRuleSystem
         {
             var commAction = new InstantAction(_prototypeManager.Index<InstantActionPrototype>("CultCommune"));
             _action.AddAction(mind.OwnedEntity.Value, commAction, null);
+
+            // Test action - spells
+            var twistedAction = new EntityTargetAction(_prototypeManager.Index<EntityTargetActionPrototype>("CultTwistedConstruction"));
+            _action.AddAction(mind.OwnedEntity.Value, twistedAction, null);
         }
         
 

@@ -13,20 +13,22 @@ using Content.Shared.Interaction;
 using Content.Shared.Humanoid;
 using Content.Shared.MobState.Components;
 using Content.Shared.MobState;
+using Content.Shared.Damage;
 using Content.Shared.Access.Components;
+
 
 namespace Content.Server.Cult
 {
     public sealed partial class CultRuneSystem : EntitySystem
     {
-
+        [Dependency] private readonly EntityManager _entityManager = default!;
+        [Dependency] private readonly CultRuleSystem _cultrule = default!;
         [Dependency] private readonly CultSystem _cult = default!;
         [Dependency] private readonly EntityLookupSystem _lookup = default!;
         [Dependency] private readonly ChatSystem _chat = default!;
         [Dependency] private readonly PopupSystem _popup = default!;
-        [Dependency] private readonly EntityManager _entityManager = default!;
         [Dependency] private readonly BodySystem _bodySystem = default!;
-        [Dependency] private readonly CultRuleSystem _cultrule = default!;
+        [Dependency] private readonly DamageableSystem _damage = default!;
 
         public override void Initialize()
         {
@@ -48,8 +50,8 @@ namespace Content.Server.Cult
 
             HashSet<EntityUid> cultists = new HashSet<EntityUid>();
             cultists.Add(args.User);
-            if (component.InvokersMinCount > 1)
-                cultists = GatherCultists(uid);
+            if (component.InvokersMinCount > 1 || component.GatherInvokers)
+                cultists = GatherCultists(uid, component.CultistGatheringRange);
 
             if (cultists.Count < component.InvokersMinCount)
             {
@@ -79,10 +81,10 @@ namespace Content.Server.Cult
 
         }
 
-        public HashSet<EntityUid> GatherCultists(EntityUid uid)
+        public HashSet<EntityUid> GatherCultists(EntityUid uid, float range)
         {
             // EntityLookupSystem
-            var entities = _lookup.GetEntitiesInRange(uid,10f, LookupFlags.Dynamic);
+            var entities = _lookup.GetEntitiesInRange(uid,range, LookupFlags.Dynamic);
             entities.RemoveWhere(x => !_cult.CheckCultistRole(x));
             return entities;
         }
@@ -90,7 +92,7 @@ namespace Content.Server.Cult
 
         public void OnInvokeOffering(EntityUid uid, CultRuneOfferingComponent component, CultRuneInvokeEvent args)
         {
-            var targets = _lookup.GetEntitiesInRange(uid, 1f, LookupFlags.Dynamic | LookupFlags.Sundries);
+            var targets = _lookup.GetEntitiesInRange(uid, component.RangeTarget, LookupFlags.Dynamic | LookupFlags.Sundries);
             targets.RemoveWhere(x => !_entityManager.HasComponent<HumanoidComponent>(x) || _cult.CheckCultistRole(x));
 
             if (targets.Count == 0)
@@ -172,6 +174,7 @@ namespace Content.Server.Cult
             // SendMessage(sacrificed);
             _bodySystem.GibBody(target);
             // Logs - sacrificed
+
             return true;
         }
 
@@ -219,6 +222,11 @@ namespace Content.Server.Cult
              * 3) Logs - converted
              * 
              */
+
+            // Get DamageSpecifier from entity
+            // damage = 
+            //_damage.TryChangeDamage(target, damage, true);
+
             return true;
         }
     }

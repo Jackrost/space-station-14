@@ -4,3 +4,16 @@
   name: action-name-cult-commune
   description: action-description-cult-commune
   event: !type:CultCommuneActionEvent
+
+- type: entityTargetAction
+  id: CultTwistedConstruction
+  icon: Objects/Materials/Sheets/metal.rsi/plasteel.png
+  name: action-name-cult-twisted-construction
+  description: action-description-cult-twisted-construction
+  event: !type:CultTwistedConstructionActionEvent
+  canTargetSelf: false
+  repeat: false
+  deselectOnMiss: false
+  whitelist:
+      tags:
+        - Sheet

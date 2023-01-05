@@ -47,6 +47,14 @@
   price: 0.05
 
 - type: material
+  id: RunedMetal
+  stack: RunedMetal
+  name: materials-runed-metal
+  icon: { sprite: Objects/Materials/materials.rsi, state: runed_metal }
+  color: "#393131"
+  price: 0
+
+- type: material
   id: Uranium
   stack: Uranium
   name: materials-uranium

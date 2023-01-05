@@ -11,6 +11,7 @@ using Content.Server.Mind.Components;
 using Content.Server.GameTicking.Rules;
 using Content.Shared.Cult;
 using Content.Shared.Humanoid;
+using Content.Shared.Stacks;
 using Content.Shared.Chat;
 using Content.Shared.Database;
 using Robust.Server.GameObjects;
@@ -19,12 +20,14 @@ using Robust.Shared.Utility;
 using Robust.Shared.Network;
 using Robust.Shared.Player;
 using Linguini.Syntax.Ast;
-
+using System.Text;
+using Content.Server.Construction.Completions;
 
 namespace Content.Server.Cult
 {
     public sealed partial class CultSystem : EntitySystem
     {
+        [Dependency] private readonly EntityManager _entityManager = default!;
         [Dependency] private readonly PopupSystem _popup = default!;
         [Dependency] private readonly ActionsSystem _action = default!;
         [Dependency] private readonly ChatSystem _chat = default!;
@@ -38,6 +41,7 @@ namespace Content.Server.Cult
             base.Initialize();
             SubscribeLocalEvent<HumanoidComponent, CultCommuneActionEvent>(OnCommuneAction);
             SubscribeLocalEvent<HumanoidComponent, CultCommuneSendMsgEvent>(OnCommuneSendMessage);
+            SubscribeLocalEvent<HumanoidComponent, CultTwistedConstructionActionEvent>(OnTwistedConstructionAction);
 
         }
 
@@ -106,7 +110,40 @@ namespace Content.Server.Cult
             */
         }
 
-        public bool CheckCultistRole(EntityUid uid)
+        private void OnTwistedConstructionAction(EntityUid uid, HumanoidComponent component, CultTwistedConstructionActionEvent args)
+        {
+            /*
+             * TO-DO
+             * 1) Stack of metal into Construction Shell
+             * 2) Cyborg into Construct
+             * 3) Cyborg shell into Construction Shell
+             */
+
+
+            if (!_entityManager.TryGetComponent<StackComponent>(args.Target, out var stack))
+                return;
+
+            // TO-DO - Remove this hardcoded thing
+            if (stack.StackTypeId == "Plasteel")
+            {
+                var transform = Transform(args.Target);
+                if (transform == null)
+                    return;
+
+                var count = stack.Count;
+                var coord = transform.Coordinates;
+                _entityManager.DeleteEntity(args.Target);
+                var material = _entityManager.SpawnEntity("MaterialRunedMetal1",coord);
+                if (!_entityManager.TryGetComponent<StackComponent>(material, out var stack_new))
+                    return;
+                stack_new.Count= count;
+
+                // TO-DO - Add localization
+                _popup.PopupEntity(Loc.GetString("Transform Plasteel into Runed metal"), args.Performer, args.Performer);
+            }
+        }
+
+            public bool CheckCultistRole(EntityUid uid)
         {
             if (TryComp<MindComponent>(uid, out var mind))
             {

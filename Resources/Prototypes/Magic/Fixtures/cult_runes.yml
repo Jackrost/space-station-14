@@ -10,6 +10,6 @@
         - state: cult2
           color: '#FF00FF'
     - type: CultRuneBase
-      invokePhrase: "LOOOOOOL"
+      invokePhrase: "Bla Bla Bla"
     - type: CultRuneOffering
 
