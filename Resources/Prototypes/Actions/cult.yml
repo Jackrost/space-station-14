@@ -17,3 +17,19 @@
   whitelist:
       tags:
         - Sheet
+
+- type: instantAction
+  id: CultHideSpell
+  icon: Interface/Actions/shop.png
+  name: action-name-cult-hide-spell
+  description: action-description-hide-spell
+  event: !type:CultHideSpellActionEvent
+  useDelay: 5
+
+- type: instantAction
+  id: CultRevealSpell
+  icon: Interface/Actions/shop.png
+  name: action-name-cult-reveal-spell
+  description: action-description-cult-reveal-spell
+  event: !type:CultRevealSpellActionEvent
+  useDelay: 5

@@ -28,8 +28,10 @@ namespace Content.Server.Cult
     public sealed partial class CultSystem : EntitySystem
     {
         [Dependency] private readonly EntityManager _entityManager = default!;
+        [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
         [Dependency] private readonly PopupSystem _popup = default!;
         [Dependency] private readonly ActionsSystem _action = default!;
+        [Dependency] private readonly EntityLookupSystem _lookup = default!;
         [Dependency] private readonly ChatSystem _chat = default!;
         [Dependency] private readonly IChatManager _chatManager = default!;
         [Dependency] private readonly UserInterfaceSystem _userint = default!;
@@ -42,6 +44,10 @@ namespace Content.Server.Cult
             SubscribeLocalEvent<HumanoidComponent, CultCommuneActionEvent>(OnCommuneAction);
             SubscribeLocalEvent<HumanoidComponent, CultCommuneSendMsgEvent>(OnCommuneSendMessage);
             SubscribeLocalEvent<HumanoidComponent, CultTwistedConstructionActionEvent>(OnTwistedConstructionAction);
+            SubscribeLocalEvent<HumanoidComponent, CultHideSpellActionEvent>(OnHideAction);
+            SubscribeLocalEvent<HumanoidComponent, CultRevealSpellActionEvent>(OnRevealAction);
+            
+            
 
         }
 
@@ -143,7 +149,31 @@ namespace Content.Server.Cult
             }
         }
 
-            public bool CheckCultistRole(EntityUid uid)
+        private void OnHideAction(EntityUid uid, HumanoidComponent component, CultHideSpellActionEvent args)
+        {
+            // TO-DO - Transer range to somewhere
+            var targets = _lookup.GetEntitiesInRange(uid, 2f, LookupFlags.Static | LookupFlags.Sundries);
+            targets.RemoveWhere(x => !_entityManager.HasComponent<CultRuneBaseComponent>(x));       // Add component for cult structures
+            foreach (var target in targets)
+            {
+                _appearance.SetData(target, CultRuneVisuals.Visible, false);
+            }
+            // TO-DO - Add logs
+        }
+
+        private void OnRevealAction(EntityUid uid, HumanoidComponent component, CultRevealSpellActionEvent args)
+        {
+            // TO-DO - Transer range to somewhere
+            var targets = _lookup.GetEntitiesInRange(uid, 2f, LookupFlags.Static | LookupFlags.Sundries);
+            targets.RemoveWhere(x => !_entityManager.HasComponent<CultRuneBaseComponent>(x));       // Add component for cult structures
+            foreach (var target in targets)
+            {
+                _appearance.SetData(target, CultRuneVisuals.Visible, true);
+            }
+            // TO-DO - Add logs
+        }
+
+        public bool CheckCultistRole(EntityUid uid)
         {
             if (TryComp<MindComponent>(uid, out var mind))
             {
