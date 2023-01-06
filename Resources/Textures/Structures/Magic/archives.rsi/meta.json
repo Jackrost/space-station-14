@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "license": "CC-BY-SA-3.0",
+  "copyright": "https://github.com/tgstation/tgstation/commit/ea94e696741f3caff616a41cf76edcaf008ea0c3",
+  "size": {
+    "x": 32,
+    "y": 32
+  },
+  "states": [
+    {
+      "name": "archives_idle"
+    },
+    {
+      "name": "archives_on",
+	  "delays" : [[0.2, 0.2, 0.2]]
+    }
+  ]
+}
