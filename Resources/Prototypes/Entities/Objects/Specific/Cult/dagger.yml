@@ -1,0 +1,20 @@
+- type: entity
+  name: ritual dagger
+  description: Used in dark rituals. Sharp and bloody. 
+  parent: BaseKnife
+  id: RitualDagger
+  components:
+  - type: Sprite
+    netsync: false
+    sprite: Objects/Weapons/Melee/combat_knife.rsi
+    state: icon
+  - type: Item
+    size: 10
+    sprite: Objects/Weapons/Melee/combat_knife.rsi
+  - type: RitualDagger
+  - type: UseDelay
+    delay: 10.0
+  ##- type: UserInterface
+  ##  interfaces:
+  ##  - key: 
+  ##    type: 

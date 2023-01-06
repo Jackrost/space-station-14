@@ -37,6 +37,7 @@ namespace Content.Server.Cult
         [Dependency] private readonly UserInterfaceSystem _userint = default!;
         [Dependency] private readonly IAdminLogManager _adminLogger = default!;
         [Dependency] private readonly CultRuleSystem _cultrule = default!;
+        [Dependency] private readonly SharedStackSystem _stacksystem = default!;
 
         public override void Initialize()
         {
@@ -132,17 +133,9 @@ namespace Content.Server.Cult
             // TO-DO - Remove this hardcoded thing
             if (stack.StackTypeId == "Plasteel")
             {
-                var transform = Transform(args.Target);
-                if (transform == null)
-                    return;
-
-                var count = stack.Count;
-                var coord = transform.Coordinates;
-                _entityManager.DeleteEntity(args.Target);
-                var material = _entityManager.SpawnEntity("MaterialRunedMetal1",coord);
-                if (!_entityManager.TryGetComponent<StackComponent>(material, out var stack_new))
-                    return;
-                stack_new.Count= count;
+                var material = EntityManager.SpawnEntity("MaterialRunedMetal1", EntityManager.GetComponent<TransformComponent>(args.Target).Coordinates);
+                _stacksystem.SetCount(material, stack.Count);
+                EntityManager.DeleteEntity(args.Target);
 
                 // TO-DO - Add localization
                 _popup.PopupEntity(Loc.GetString("Transform Plasteel into Runed metal"), args.Performer, args.Performer);

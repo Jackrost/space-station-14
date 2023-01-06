@@ -7,9 +7,12 @@ using Content.Server.Cult;
 using Content.Server.Cult.Components;
 using Content.Server.MobState;
 using Content.Server.Actions;
+using Content.Server.Storage.Components;
+using Content.Server.Storage.EntitySystems;
 using Content.Shared.CCVar;
 using Content.Shared.Dataset;
 using Content.Shared.Roles;
+using Content.Shared.Stacks;
 using Robust.Server.Player;
 using Robust.Shared.Audio;
 using Robust.Shared.Configuration;
@@ -19,6 +22,10 @@ using Robust.Shared.Random;
 using Robust.Shared.Utility;
 using Microsoft.CodeAnalysis;
 using Content.Shared.Actions.ActionTypes;
+using Content.Shared.Inventory;
+using System.Security.Cryptography;
+using Robust.Shared.Containers;
+using Content.Shared.Stacks;
 
 namespace Content.Server.GameTicking.Rules;
 
@@ -32,6 +39,10 @@ public sealed class CultRuleSystem : GameRuleSystem
     [Dependency] private readonly GameTicker _gameTicker = default!;
     [Dependency] private readonly MobStateSystem _mobStateSystem = default!;
     [Dependency] private readonly ActionsSystem _action = default!;
+    [Dependency] private readonly InventorySystem _inventory = default!;
+    [Dependency] private readonly StorageSystem _storage = default!;
+    [Dependency] private readonly SharedStackSystem _stacksystem = default!;
+
 
     public override string Prototype => "Cult";
 
@@ -178,41 +189,33 @@ public sealed class CultRuleSystem : GameRuleSystem
             return false;
         }
 
-        /*
-        // creadth: we need to create uplink for the antag.
-        // PDA should be in place already
-        DebugTools.AssertNotNull(mind.OwnedEntity);
-
-        var startingBalance = _cfg.GetCVar(CCVars.TraitorStartingBalance);
-
-        if (mind.CurrentJob != null)
-            startingBalance = Math.Max(startingBalance - mind.CurrentJob.Prototype.AntagAdvantage, 0);
-
-        if (!_uplink.AddUplink(mind.OwnedEntity!.Value, startingBalance))
-            return false;
-        */
-
-        // Give ritual knife and metal to satchel or pocket                            -----------------------------------------------------------------------------------
-        if (start_equip)
-        {
-
-        }
-
-        // Give Commune ability
-        
         if (mind.OwnedEntity != null)
         {
+            EntityUid entity = mind.OwnedEntity.Value;
+
+            // Give ritual knife and metal to satchel or pocket (it's hardcoded)
+            if (start_equip)
+            {
+                _inventory.TryEquip(entity, EntityManager.SpawnEntity("RitualDagger", EntityManager.GetComponent<TransformComponent>(entity).Coordinates), "pocket1", true, true);
+                var metal = EntityManager.SpawnEntity("MaterialRunedMetal1", EntityManager.GetComponent<TransformComponent>(entity).Coordinates);
+                _stacksystem.SetCount(metal, 20);
+                if (_inventory.TryGetSlotEntity(entity, "back", out var backEntity))
+                    if (TryComp(backEntity, out ServerStorageComponent? storage))
+                        _storage.Insert(backEntity.Value, metal, storage, false);
+            }
+
+            // Give Commune ability
             var commAction = new InstantAction(_prototypeManager.Index<InstantActionPrototype>("CultCommune"));
-            _action.AddAction(mind.OwnedEntity.Value, commAction, null);
+            _action.AddAction(entity, commAction, null);
 
             // Test action - spells
             // Remove this -------------------------------------------------------------------------------------------------------------------------------------
             var twistedAction = new EntityTargetAction(_prototypeManager.Index<EntityTargetActionPrototype>("CultTwistedConstruction"));
-            _action.AddAction(mind.OwnedEntity.Value, twistedAction, null);
+            _action.AddAction(entity, twistedAction, null);
             var hideAction = new InstantAction(_prototypeManager.Index<InstantActionPrototype>("CultHideSpell"));
-            _action.AddAction(mind.OwnedEntity.Value, hideAction, null);
+            _action.AddAction(entity, hideAction, null);
             var revealAction = new InstantAction(_prototypeManager.Index<InstantActionPrototype>("CultRevealSpell"));
-            _action.AddAction(mind.OwnedEntity.Value, revealAction, null);
+            _action.AddAction(entity, revealAction, null);
         }
         
 

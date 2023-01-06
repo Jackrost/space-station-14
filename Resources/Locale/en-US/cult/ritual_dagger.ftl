@@ -1,0 +1,1 @@
+ritual-dagger-remove-rune = You erase {THE ($rune)} using {THE ($dagger)}.
