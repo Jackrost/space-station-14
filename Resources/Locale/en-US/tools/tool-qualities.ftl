@@ -21,3 +21,6 @@ tool-quality-slicing-tool-name = Knife
 
 tool-quality-sawing-name = Sawing
 tool-quality-sawing-tool-name = Saw
+
+tool-quality-ritual-dagger-name = Cursing
+tool-quality-ritual-dagger-tool-name = Ritual Dagger

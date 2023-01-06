@@ -85,3 +85,35 @@
                   max: 1
             - !type:DoActsBehavior
               acts: [ "Destruction" ]
+
+- type: entity
+  id: CultGirder
+  parent: Girder
+  name: cult girder
+  description: Framework made of a strange and shockingly cold metal. It doesn't seem to have any bolts.
+  components:
+    - type: Sprite
+      sprite: Structures/Walls/cult.rsi
+      state: girder
+    - type: Construction
+      graph: CultGirder
+      node: girder
+    - type: Destructible
+      thresholds:
+        - trigger:
+            !type:DamageTrigger
+            damage: 300
+          behaviors:
+            - !type:DoActsBehavior
+              acts: [ "Destruction" ]
+        - trigger:
+            !type:DamageTrigger
+            damage: 100
+          behaviors:
+            - !type:SpawnEntitiesBehavior
+              spawn:
+                MaterialRunedMetal1:
+                  min: 1
+                  max: 1
+            - !type:DoActsBehavior
+              acts: [ "Destruction" ]

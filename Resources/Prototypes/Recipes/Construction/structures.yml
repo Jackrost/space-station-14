@@ -179,6 +179,42 @@
     - !type:TileNotBlocked
 
 - type: construction
+  name: cult girder
+  id: CultGirder
+  graph: CultGirder
+  startNode: start
+  targetNode: girder
+  category: construction-category-structures
+  description: Framework made of a strange and shockingly cold metal. It doesn't seem to have any bolts.
+  icon:
+    sprite: /Textures/Structures/Walls/cult.rsi
+    state: girder
+  objectType: Structure
+  placementMode: SnapgridCenter
+  canRotate: false
+  canBuildInImpassable: false
+  conditions:
+    - !type:TileNotBlocked
+
+- type: construction
+  name: cult wall
+  id: CultWall
+  graph: CultGirder
+  startNode: start
+  targetNode: wall
+  category: construction-category-structures
+  description: A cold metal wall engraved with indecipherable symbols. Studying them causes your head to pound.
+  icon:
+    sprite: Structures/Walls/cult.rsi
+    state: full
+  objectType: Structure
+  placementMode: SnapgridCenter
+  canRotate: false
+  canBuildInImpassable: false
+  conditions:
+    - !type:TileNotBlocked
+
+- type: construction
   name: grille
   id: Grille
   graph: Grille
