@@ -152,7 +152,7 @@ namespace Content.Server.Cult
         private void OnHideAction(EntityUid uid, HumanoidComponent component, CultHideSpellActionEvent args)
         {
             // TO-DO - Transer range to somewhere
-            var targets = _lookup.GetEntitiesInRange(uid, 2f, LookupFlags.Static | LookupFlags.Sundries);
+            var targets = _lookup.GetEntitiesInRange(uid, 2f, LookupFlags.StaticSundries);
             targets.RemoveWhere(x => !_entityManager.HasComponent<CultRuneBaseComponent>(x));       // Add component for cult structures
             foreach (var target in targets)
             {
@@ -164,7 +164,7 @@ namespace Content.Server.Cult
         private void OnRevealAction(EntityUid uid, HumanoidComponent component, CultRevealSpellActionEvent args)
         {
             // TO-DO - Transer range to somewhere
-            var targets = _lookup.GetEntitiesInRange(uid, 2f, LookupFlags.Static | LookupFlags.Sundries);
+            var targets = _lookup.GetEntitiesInRange(uid, 2f, LookupFlags.StaticSundries);
             targets.RemoveWhere(x => !_entityManager.HasComponent<CultRuneBaseComponent>(x));       // Add component for cult structures
             foreach (var target in targets)
             {

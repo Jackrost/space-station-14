@@ -113,6 +113,14 @@
     {
       "name": "runed_metal",
 	  "delays": [[0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]]
-    }
+    },
+    {
+      "name": "runed_metal-inhand-left",
+      "directions": 4
+    },
+    {
+      "name": "runed_metal-inhand-right",
+      "directions": 4
+	}
   ]
 }
