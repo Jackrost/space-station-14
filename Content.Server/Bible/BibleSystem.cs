@@ -6,6 +6,7 @@ using Content.Shared.Verbs;
 using Content.Shared.ActionBlocker;
 using Content.Shared.Actions;
 using Content.Server.Bible.Components;
+using Content.Server.Cult.Components;
 using Content.Server.MobState;
 using Content.Server.Popups;
 using Content.Server.Ghost.Roles.Components;
@@ -96,10 +97,24 @@ namespace Content.Server.Bible
             if (_delay.ActiveDelay(uid, delay))
                 return;
 
-            if (args.Target == null || args.Target == args.User || !_mobStateSystem.IsAlive(args.Target.Value))
+            if (args.Target == null || args.Target == args.User)
             {
                 return;
             }
+
+            // Purge this place from runes
+            if (HasComp<CultRuneBaseComponent>(args.Target))
+            {
+                if (HasComp<BibleUserComponent>(args.User))
+                {
+                    _popupSystem.PopupEntity(Loc.GetString("bible-remove-rune"), args.User, args.User);
+                    EntityManager.DeleteEntity(args.Target.Value);
+                    return;
+                }
+            }
+
+            if (!_mobStateSystem.IsAlive(args.Target.Value))
+                return;
 
             if (!HasComp<BibleUserComponent>(args.User))
             {
