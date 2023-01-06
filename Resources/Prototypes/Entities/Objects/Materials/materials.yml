@@ -127,7 +127,7 @@
   components:
   - type: Material
     materials:
-      Runed metal: 100
+      RunedMetal: 100
   - type: Stack
     stackType: RunedMetal
   - type: Sprite
