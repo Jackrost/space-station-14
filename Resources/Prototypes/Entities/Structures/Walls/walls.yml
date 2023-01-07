@@ -153,6 +153,9 @@
     sprite: Structures/Walls/cult.rsi
   - type: Icon
     sprite: Structures/Walls/cult.rsi
+  - type: Construction
+    graph: CultGirder
+    node: wall
   - type: Destructible
     thresholds:
     - trigger:

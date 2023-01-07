@@ -33,6 +33,18 @@
           steps:
             - tool: Welding
               doAfter: 4
+        - to: start
+          completed:
+            - !type:SpawnPrototype
+              prototype: MaterialRunedMetal1
+              amount: 2
+            - !type:DeleteEntity {}
+          conditions:
+            - !type:EntityAnchored
+              anchored: false
+          steps:
+            - tool: Cursing
+              doAfter: 0.8
               
         - to: wall
           completed:
@@ -56,3 +68,11 @@
           steps:
             - tool: Welding
               doAfter: 12
+        - to: girder
+          completed:
+            - !type:GivePrototype
+              prototype: MaterialRunedMetal1
+              amount: 2
+          steps:
+            - tool: Cursing
+              doAfter: 1
