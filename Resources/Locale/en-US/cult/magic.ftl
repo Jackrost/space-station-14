@@ -1,0 +1,2 @@
+twisted-construction-transform-material-self = You transform {THE ($material)} using {$magic}.
+twisted-construction-transform-material-others = You saw how {THE ($user)} transform {THE ($material)} with strange light!

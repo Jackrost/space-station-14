@@ -11,17 +11,16 @@ using Content.Server.Mind.Components;
 using Content.Server.GameTicking.Rules;
 using Content.Shared.Cult;
 using Content.Shared.Humanoid;
+using Content.Shared.IdentityManagement;
 using Content.Shared.Stacks;
 using Content.Shared.Chat;
 using Content.Shared.Database;
+using Content.Shared.Popups;
 using Robust.Server.GameObjects;
 using Robust.Shared.GameObjects;
 using Robust.Shared.Utility;
 using Robust.Shared.Network;
 using Robust.Shared.Player;
-using Linguini.Syntax.Ast;
-using System.Text;
-using Content.Server.Construction.Completions;
 
 namespace Content.Server.Cult
 {
@@ -135,10 +134,17 @@ namespace Content.Server.Cult
             {
                 var material = EntityManager.SpawnEntity("MaterialRunedMetal1", EntityManager.GetComponent<TransformComponent>(args.Target).Coordinates);
                 _stacksystem.SetCount(material, stack.Count);
-                EntityManager.DeleteEntity(args.Target);
 
-                // TO-DO - Add localization
-                _popup.PopupEntity(Loc.GetString("Transform Plasteel into Runed metal"), args.Performer, args.Performer);
+                var magicName = Loc.GetString("action-name-cult-twisted-construction");
+                var selfMessage = Loc.GetString("twisted-construction-transform-material-self", ("magic", magicName), ("material", args.Target));
+                _popup.PopupEntity(selfMessage, args.Performer, args.Performer);
+
+                var othersMessage = Loc.GetString("twisted-construction-transform-material-others", ("user", Identity.Entity(args.Performer, EntityManager)), ("material", args.Target));
+                _popup.PopupEntity(othersMessage, args.Performer, Filter.PvsExcept(args.Performer), true, PopupType.MediumCaution);
+
+                // TO-DO - logs
+
+                EntityManager.DeleteEntity(args.Target);
             }
         }
 
